@@ -1,4 +1,4 @@
-* {
+*{
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -12,18 +12,17 @@ body {
 
 body {
     overflow: hidden;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
 }
 
 .background {
     position: relative;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; 
     background: #000;
 }
 
-/* Background image */
 .background::before {
     content: "";
     position: absolute;
@@ -39,7 +38,6 @@ body {
 
     filter: blur(6px);
     animation: clearBackground 3.5s ease forwards;
-
     z-index: 0;
 }
 
@@ -75,7 +73,7 @@ body {
 
     animation: hideLoader 0.5s ease 3.5s forwards;
 }
-
+ 
 .loader {
     width: 70px;
     height: 70px;
