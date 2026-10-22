@@ -440,3 +440,124 @@ body {
     border-radius: 5px;
     cursor: pointer;
 }
+
+
+/* Paint */
+#paintWindow {
+    width: 660px;
+    max-width: calc(100vw - 20px);
+}
+
+.paint-body {
+    padding: 12px;
+}
+
+.paint-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.paint-toolbar label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.paint-toolbar button,
+.files-toolbar button {
+    padding: 7px 10px;
+    background: #702126;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#paintCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: white;
+    border-radius: 4px;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+/* Files */
+#filesWindow {
+    width: 540px;
+    max-width: calc(100vw - 20px);
+}
+
+.files-body {
+    padding: 14px;
+}
+
+.files-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+#filesPath {
+    color: #ff7777;
+    margin: 15px 0 10px;
+    font-size: 13px;
+}
+
+.files-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    min-height: 180px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.file-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    padding: 12px 5px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: white;
+    background: #252525;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    text-align: center;
+    font-size: 12px;
+}
+
+.file-entry:hover {
+    background: #402326;
+    border-color: #a51c24;
+}
+
+.file-entry .file-icon {
+    font-size: 28px;
+}
+
+.files-status {
+    margin-top: 12px;
+    color: #aaa;
+    font-size: 12px;
+}
+
+@media (max-width: 480px) {
+    #paintWindow,
+    #filesWindow {
+        max-width: calc(100vw - 12px);
+    }
+
+    .files-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

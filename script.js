@@ -291,6 +291,340 @@ document.getElementById("todayButton").addEventListener("click", function () {
 });
 
 
+/* =========================
+   PAINT APPLICATION
+========================= */
+
+const paintWindow = document.getElementById("paintWindow");
+const paintCanvas = document.getElementById("paintCanvas");
+const ctx = paintCanvas.getContext("2d");
+
+const paintColor = document.getElementById("paintColor");
+const brushSize = document.getElementById("brushSize");
+
+let drawing = false;
+let erasing = false;
+
+document.querySelector('.app-item img[alt="Paint"]')
+    .addEventListener("dblclick", function () {
+        paintWindow.style.display = "block";
+    });
+
+document.getElementById("minimizePaint").onclick = function () {
+    paintWindow.style.display = "none";
+};
+
+document.getElementById("closePaint").onclick = function () {
+    paintWindow.style.display = "none";
+};
+
+function getCanvasPosition(e) {
+    const rect = paintCanvas.getBoundingClientRect();
+
+    return {
+        x: (e.clientX - rect.left) * paintCanvas.width / rect.width,
+        y: (e.clientY - rect.top) * paintCanvas.height / rect.height
+    };
+}
+
+paintCanvas.addEventListener("pointerdown", function (e) {
+    drawing = true;
+    paintCanvas.setPointerCapture(e.pointerId);
+
+    const pos = getCanvasPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+
+    // Draw a dot even when the user only clicks
+    ctx.fillStyle = erasing ? "#ffffff" : paintColor.value;
+    ctx.arc(pos.x, pos.y, Number(brushSize.value) / 2, 0, Math.PI * 2);
+    ctx.fill();
+});
+
+paintCanvas.addEventListener("pointermove", function (e) {
+    if (!drawing) return;
+
+    const pos = getCanvasPosition(e);
+
+    ctx.lineWidth = Number(brushSize.value);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = erasing ? "#ffffff" : paintColor.value;
+
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+});
+
+function stopDrawing() {
+    drawing = false;
+    ctx.beginPath();
+}
+
+paintCanvas.addEventListener("pointerup", stopDrawing);
+paintCanvas.addEventListener("pointercancel", stopDrawing);
+
+document.getElementById("eraserButton").onclick = function () {
+    erasing = !erasing;
+    this.textContent = erasing ? "Pencil" : "Eraser";
+};
+
+document.getElementById("clearCanvas").onclick = function () {
+    ctx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+};
+
+document.getElementById("savePainting").onclick = function () {
+    const link = document.createElement("a");
+    link.download = "professor-painting.png";
+    link.href = paintCanvas.toDataURL("image/png");
+    link.click();
+};
+
+
+/* =========================
+   FILES APPLICATION
+========================= */
+
+const filesWindow = document.getElementById("filesWindow");
+const filesList = document.getElementById("filesList");
+const filesPath = document.getElementById("filesPath");
+const filesStatus = document.getElementById("filesStatus");
+
+const storageKey = "professorOSFiles";
+
+let rootFolder = loadFiles();
+let currentFolder = rootFolder;
+let folderStack = [];
+let selectedFile = null;
+
+function loadFiles() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+
+        if (saved && Array.isArray(saved.children)) {
+            return saved;
+        }
+    } catch (error) {
+        console.warn("Could not load saved files.", error);
+    }
+
+    return {
+        name: "Home",
+        type: "folder",
+        children: [
+            { name: "Documents", type: "folder", children: [] },
+            { name: "Pictures", type: "folder", children: [] },
+            { name: "Projects", type: "folder", children: [] },
+            { name: "Welcome.txt", type: "file",
+              content: "Welcome to Professor OS!" }
+        ]
+    };
+}
+
+function saveFiles() {
+    try {
+        localStorage.setItem(storageKey, JSON.stringify(rootFolder));
+        filesStatus.textContent = "Changes saved in this browser.";
+    } catch (error) {
+        filesStatus.textContent =
+            "Storage is full or unavailable. Download important files.";
+    }
+}
+
+document.querySelector('.app-item img[alt="File Folder"]')
+    .addEventListener("dblclick", function () {
+        filesWindow.style.display = "block";
+        renderFiles();
+    });
+
+document.getElementById("minimizeFiles").onclick = function () {
+    filesWindow.style.display = "none";
+};
+
+document.getElementById("closeFiles").onclick = function () {
+    filesWindow.style.display = "none";
+};
+
+function renderFiles() {
+    filesList.replaceChildren();
+    selectedFile = null;
+
+    filesPath.textContent = "Home" +
+        folderStack.map(folder => " / " + folder.name).join("");
+
+    currentFolder.children.forEach(function (item) {
+        const entry = document.createElement("button");
+        entry.className = "file-entry";
+
+        const icon = document.createElement("span");
+        icon.className = "file-icon";
+        icon.textContent = item.type === "folder" ? "📁" : "📄";
+
+        const name = document.createElement("span");
+        name.textContent = item.name;
+
+        entry.append(icon, name);
+
+        entry.addEventListener("click", function () {
+            selectedFile = item;
+            filesStatus.textContent = item.name + " selected.";
+        });
+
+        entry.addEventListener("dblclick", function () {
+            if (item.type === "folder") {
+                folderStack.push(currentFolder);
+                currentFolder = item;
+                renderFiles();
+            } else {
+                editTextFile(item);
+            }
+        });
+
+        filesList.appendChild(entry);
+    });
+
+    if (currentFolder.children.length === 0) {
+        filesStatus.textContent = "This folder is empty.";
+    }
+}
+
+function editTextFile(file) {
+    const updated = prompt(
+        "Edit text file contents:",
+        file.content || ""
+    );
+
+    if (updated !== null) {
+        file.content = updated;
+        saveFiles();
+    }
+}
+
+document.getElementById("filesHome").onclick = function () {
+    currentFolder = rootFolder;
+    folderStack = [];
+    renderFiles();
+};
+
+document.getElementById("createFolder").onclick = function () {
+    const name = prompt("Enter folder name:");
+
+    if (!name || !name.trim()) return;
+
+    if (currentFolder.children.some(item =>
+        item.name.toLowerCase() === name.trim().toLowerCase()
+    )) {
+        alert("An item with that name already exists.");
+        return;
+    }
+
+    currentFolder.children.push({
+        name: name.trim(),
+        type: "folder",
+        children: []
+    });
+
+    saveFiles();
+    renderFiles();
+};
+
+document.getElementById("createTextFile").onclick = function () {
+    const name = prompt("Enter file name:", "Notes.txt");
+
+    if (!name || !name.trim()) return;
+
+    if (currentFolder.children.some(item =>
+        item.name.toLowerCase() === name.trim().toLowerCase()
+    )) {
+        alert("An item with that name already exists.");
+        return;
+    }
+
+    const file = {
+        name: name.trim(),
+        type: "file",
+        content: ""
+    };
+
+    currentFolder.children.push(file);
+    saveFiles();
+    renderFiles();
+    editTextFile(file);
+};
+
+document.getElementById("uploadFile").onclick = function () {
+    document.getElementById("fileUploadInput").click();
+};
+
+document.getElementById("fileUploadInput")
+    .addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const name = file.name;
+
+            if (currentFolder.children.some(item =>
+                item.name.toLowerCase() === name.toLowerCase()
+            )) {
+                alert("An item with that name already exists.");
+                return;
+            }
+
+            currentFolder.children.push({
+                name: name,
+                type: "file",
+                content: String(reader.result)
+            });
+
+            saveFiles();
+            renderFiles();
+            filesStatus.textContent = "Uploaded: " + name;
+        };
+
+        reader.onerror = function () {
+            filesStatus.textContent = "Could not read that file.";
+        };
+
+        // This simple version imports text files only.
+        if (file.type.startsWith("text/") ||
+            /\.(txt|md|csv|json|html|css|js|xml)$/i.test(file.name)) {
+            reader.readAsText(file);
+        } else {
+            alert("This version supports text files only.");
+        }
+
+        e.target.value = "";
+    });
+
+// Download the selected text file
+const downloadButton = document.createElement("button");
+downloadButton.textContent = "Download";
+downloadButton.onclick = function () {
+    if (!selectedFile || selectedFile.type !== "file") {
+        alert("Select a text file first.");
+        return;
+    }
+
+    const blob = new Blob([selectedFile.content || ""], {
+        type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = selectedFile.name;
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+document.querySelector(".files-toolbar").appendChild(downloadButton);
+
+renderFiles();
+
+
 function makeWindowDraggable(windowElement) {
     const header = windowElement.querySelector(".window-header");
 
@@ -335,6 +669,8 @@ function makeWindowDraggable(windowElement) {
     });
 }
 
-// Make both application windows draggable
+
 makeWindowDraggable(document.getElementById("calculatorWindow"));
 makeWindowDraggable(document.getElementById("calendarWindow"));
+makeWindowDraggable(document.getElementById("paintWindow"));
+makeWindowDraggable(document.getElementById("filesWindow"));

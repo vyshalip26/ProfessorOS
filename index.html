@@ -129,5 +129,68 @@
 
     </div>
 
+
+        
+    <!-- PAINT APPLICATION -->
+    <div class="app-window" id="paintWindow">
+        <div class="window-header">
+            <span>Paint</span>
+            <div class="window-controls">
+                <button id="minimizePaint" title="Minimize">−</button>
+                <button id="closePaint" title="Close">×</button>
+            </div>
+        </div>
+
+        <div class="paint-body">
+            <div class="paint-toolbar">
+                <label>
+                    Color
+                    <input type="color" id="paintColor" value="#c51f2b">
+                </label>
+
+                <label>
+                    Brush
+                    <input type="range" id="brushSize"
+                        min="1" max="30" value="5">
+                </label>
+
+                <button id="eraserButton">Eraser</button>
+                <button id="clearCanvas">Clear</button>
+                <button id="savePainting">Save PNG</button>
+            </div>
+
+            <canvas id="paintCanvas" width="600" height="350"></canvas>
+        </div>
+    </div>
+
+    <!-- FILES APPLICATION -->
+    <div class="app-window" id="filesWindow">
+        <div class="window-header">
+            <span>Files</span>
+            <div class="window-controls">
+                <button id="minimizeFiles" title="Minimize">−</button>
+                <button id="closeFiles" title="Close">×</button>
+            </div>
+        </div>
+
+        <div class="files-body">
+            <div class="files-toolbar">
+                <button id="filesHome">Home</button>
+                <button id="createFolder">+ Folder</button>
+                <button id="createTextFile">+ Text File</button>
+                <button id="uploadFile">Upload</button>
+                <input type="file" id="fileUploadInput" hidden>
+            </div>
+
+            <p id="filesPath">Home</p>
+
+            <div id="filesList" class="files-list"></div>
+
+            <p class="files-status" id="filesStatus">
+                Your personal workspace
+            </p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
