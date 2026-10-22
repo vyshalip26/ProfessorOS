@@ -47,6 +47,87 @@
             <p>Stopwatch</p>
         </div>
     </div>
- 
+    
+    <!-- Calculator Application Window -->
+    <div class="app-window" id="calculatorWindow">
+
+        <div class="window-header">
+            <span>Calculator</span>
+
+            <div class="window-controls">
+                <button id="minimizeCalculator" title="Minimize">−</button>
+                <button id="closeCalculator" title="Close">×</button>
+            </div>
+        </div>
+
+        <div class="calculator-body">
+            <input type="text" id="calcDisplay"
+                value="0" readonly>
+
+            <div class="calculator-buttons">
+                <button data-action="clear">AC</button>
+                <button data-action="delete">DEL</button>
+                <button data-operator="/">÷</button>
+                <button data-operator="*">×</button>
+
+                <button data-number="7">7</button>
+                <button data-number="8">8</button>
+                <button data-number="9">9</button>
+                <button data-operator="-">−</button>
+
+                <button data-number="4">4</button>
+                <button data-number="5">5</button>
+                <button data-number="6">6</button>
+                <button data-operator="+">+</button>
+
+                <button data-number="1">1</button>
+                <button data-number="2">2</button>
+                <button data-number="3">3</button>
+                <button data-action="equals" class="equals">=</button>
+
+                <button data-number="0" class="zero">0</button>
+                <button data-number=".">.</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Calendar Application Window -->
+    <div class="app-window calendar-window" id="calendarWindow">
+
+        <div class="window-header">
+            <span>Calendar</span>
+
+            <div class="window-controls">
+                <button id="minimizeCalendar" title="Minimize">−</button>
+                <button id="closeCalendar" title="Close">×</button>
+            </div>
+        </div>
+
+        <div class="calendar-body">
+            <div class="calendar-heading">
+                <button id="prevMonth">❮</button>
+                <h2 id="monthYear"></h2>
+                <button id="nextMonth">❯</button>
+            </div>
+
+            <div class="calendar-weekdays">
+                <span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+            </div>
+
+            <div class="calendar-days" id="calendarDays"></div>
+
+            <p id="selectedDate">Select a date</p>
+            <button id="todayButton" class="today-button">Today</button>
+        </div>
+
+    </div>
+
     <script src="script.js"></script>
 </body>
