@@ -1,4 +1,4 @@
-# Proffesor OS
+# Professor OS
 This Operating system is a complete Money-Heist Theme. Main moto of this project is to build a basic setup of a operating system highlighting how applications are made after following this money heist theme. 
 
 ## Tech Stack
