@@ -91,8 +91,7 @@
         </div>
 
     </div>
-    
-    <!-- Calendar Application Window -->
+     
     <div class="app-window calendar-window" id="calendarWindow">
 
         <div class="window-header">
@@ -192,5 +191,20 @@
         </div>
     </div>
 
+    <!-- Stopwatch-->
+     <div class="app-window" id="stopwatchWindow">
+        <div class="window-header">
+            <span>StopWatch</span>
+            <div class="window-controls">
+                <button id="minimize" title="Minimize">−</button>
+                <button id="close" title="Close">×</button>
+            </div>
+        </div>
+                <h1 id="stopwatch-display">00:00:00</h1>
+
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="stopStopwatch()">Stop</button>
+        <button onclick="resetStopwatch()">Reset</button>
+    </div>
     <script src="script.js"></script>
 </body>

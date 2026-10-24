@@ -668,9 +668,60 @@ function makeWindowDraggable(windowElement) {
         document.addEventListener("mouseup", stopDragging);
     });
 }
+// Stopwatch timer
+// Open Stopwatch on double-click
+const stopwatchIcon = document.querySelector('.app-item img[alt="Stopwatch"]');
+const stopwatchWindow = document.getElementById("stopwatchWindow");
+
+stopwatchIcon.addEventListener("dblclick", () => {
+    stopwatchWindow.style.display = "block";
+});
+let [sec, mins, hrs] = [0, 0, 0];
+let displayTime = document.getElementById("stopwatch-display");
+let timer = null;
+
+function stopwatch() {
+    sec++;
+
+    if (sec == 60) {
+        sec = 0;
+        mins++;
+
+        if (mins == 60) {
+            mins = 0;
+            hrs++;
+        }
+    }
+
+    let h = hrs < 10 ? "0" + hrs : hrs;
+    let m = mins < 10 ? "0" + mins : mins;
+    let s = sec < 10 ? "0" + sec : sec;
+
+    displayTime.textContent = `${h}:${m}:${s}`;
+}
+
+function startStopwatch() {
+    if (timer !== null) return;
+
+    timer = setInterval(stopwatch, 1000);
+}
+
+function stopStopwatch() {
+    clearInterval(timer);
+    timer = null;
+}
+
+function resetStopwatch() {
+    clearInterval(timer);
+    timer = null;
+
+    [sec, mins, hrs] = [0, 0, 0];
+    displayTime.textContent = "00:00:00";
+}
 
 
 makeWindowDraggable(document.getElementById("calculatorWindow"));
 makeWindowDraggable(document.getElementById("calendarWindow"));
 makeWindowDraggable(document.getElementById("paintWindow"));
 makeWindowDraggable(document.getElementById("filesWindow"));
+makeWindowDraggable(document.getElementById("stopwatchWindow"));
