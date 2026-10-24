@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Proffesor OS</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -196,8 +196,8 @@
         <div class="window-header">
             <span>StopWatch</span>
             <div class="window-controls">
-                <button id="minimize" title="Minimize">−</button>
-                <button id="close" title="Close">×</button>
+                <button id="minimizeStopwatch" title="Minimize">−</button>
+                <button id="closeStopwatch" title="Close">×</button>
             </div>
         </div>
                 <h1 id="stopwatch-display">00:00:00</h1>
@@ -205,6 +205,45 @@
         <button onclick="startStopwatch()">Start</button>
         <button onclick="stopStopwatch()">Stop</button>
         <button onclick="resetStopwatch()">Reset</button>
+    </div>
+
+    <div class="app-window" id="todoWindow">
+        <div class="window-header">
+            <span> To-Do List</span>
+            <div class="window-controls">
+                <button id="minimizeTodo" alt="Minimize">-</button>
+                <button id="closeTodo" alt="Close">×</button>
+            </div>
+        </div>
+                
+        <div class="todo-body">
+            <form id="todoForm">
+                <input
+                    type="text"
+                    id="todoInput"
+                    placeholder="Enter a task..."
+                    maxlength="200"
+                    required
+                >
+                <button type="submit" id="addButton">Add Task</button>
+            </form>
+
+            <ul id="todoList"></ul>
+
+            <p id="todoStatus"></p>
+        </div>
+        
+    </div>
+    <!-- Background Music Controller -->
+    <div class="music-player">
+        <audio id="backgroundMusic" loop>
+            <source src="utilities/music/Bella Ciao ( Instrumental ).mp3" type="audio/mpeg">
+            Your browser does not support audio.
+        </audio>
+
+        <button id="musicToggle" type="button" aria-pressed="false">
+            ▶ Play Music
+        </button>
     </div>
     <script src="script.js"></script>
 </body>

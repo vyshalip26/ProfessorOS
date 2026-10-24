@@ -240,7 +240,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
+    
     width: 320px;
     padding-bottom: 15px;
 
@@ -253,7 +253,21 @@ body {
     z-index: 100;
     display: none;
 }
+.app-window {
+    resize: both;
+    overflow: auto;
 
+    min-width: 280px;
+    min-height: 200px;
+
+    max-width: 95vw;
+    max-height: 90vh;
+}
+
+.app-window img,
+.app-window canvas {
+    max-width: 100%;
+}
 /* Window title bar */
 .window-header {
     display: flex;
@@ -573,7 +587,6 @@ body {
     border: 1px solid #b71c1c;
     border-radius: 10px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
     font-family: Arial, sans-serif;
     z-index: 100;
 }
@@ -645,4 +658,87 @@ body {
 
 #stopwatchWindow > button:active {
     transform: scale(0.96);
+}
+
+#todoForm {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+#todoInput {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+}
+
+#todoList {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #292929;
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+}
+
+.todo-item span {
+    flex: 1;
+}
+
+.todo-item.completed span {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.delete-todo {
+    padding: 5px 8px;
+    background: #8b0000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.empty-todos {
+    color: #aaa;
+    padding: 10px;
+}
+
+
+.music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+#musicToggle {
+    background: #8b0000;
+    color: white;
+    border: 2px solid #d4af37;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    transition: background 0.2s, transform 0.2s;
+}
+
+#musicToggle:hover {
+    background: #b22222;
+    transform: scale(1.05);
+}
+
+#musicToggle:focus-visible {
+    outline: 3px solid #d4af37;
+    outline-offset: 3px;
 }

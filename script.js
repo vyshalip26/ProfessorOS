@@ -624,50 +624,66 @@ document.querySelector(".files-toolbar").appendChild(downloadButton);
 
 renderFiles();
 
-
+/* Make all application windows draggable by their title bars */
 function makeWindowDraggable(windowElement) {
+    if (!windowElement) return;
+
     const header = windowElement.querySelector(".window-header");
+    if (!header) return;
 
-    let startX = 0;
-    let startY = 0;
-    let initialLeft = 0;
-    let initialTop = 0;
-
-    header.addEventListener("mousedown", function (e) {
-        // Don't drag when clicking minimize or close
+    header.addEventListener("pointerdown", function (e) {
+        // Do not drag when clicking window controls
         if (e.target.closest("button")) return;
+        if (e.button !== 0) return;
 
         e.preventDefault();
 
         const rect = windowElement.getBoundingClientRect();
 
-        // Remove centering transform before dragging
+        // Switch to consistent viewport-based positioning
+        windowElement.style.position = "fixed";
         windowElement.style.transform = "none";
         windowElement.style.left = rect.left + "px";
         windowElement.style.top = rect.top + "px";
+        windowElement.style.zIndex = "200";
 
-        startX = e.clientX;
-        startY = e.clientY;
-        initialLeft = rect.left;
-        initialTop = rect.top;
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const initialLeft = rect.left;
+        const initialTop = rect.top;
 
-        function moveWindow(e) {
+        function moveWindow(event) {
             windowElement.style.left =
-                initialLeft + e.clientX - startX + "px";
+                initialLeft + event.clientX - startX + "px";
 
             windowElement.style.top =
-                initialTop + e.clientY - startY + "px";
+                initialTop + event.clientY - startY + "px";
         }
 
         function stopDragging() {
-            document.removeEventListener("mousemove", moveWindow);
-            document.removeEventListener("mouseup", stopDragging);
+            document.removeEventListener("pointermove", moveWindow);
+            document.removeEventListener("pointerup", stopDragging);
+            document.removeEventListener("pointercancel", stopDragging);
         }
 
-        document.addEventListener("mousemove", moveWindow);
-        document.addEventListener("mouseup", stopDragging);
+        document.addEventListener("pointermove", moveWindow);
+        document.addEventListener("pointerup", stopDragging);
+        document.addEventListener("pointercancel", stopDragging);
     });
 }
+
+// Register each window ONCE
+[
+    "calculatorWindow",
+    "calendarWindow",
+    "paintWindow",
+    "filesWindow",
+    "stopwatchWindow",
+    "todoWindow"
+].forEach(function (id) {
+    makeWindowDraggable(document.getElementById(id));
+});
+
 // Stopwatch timer
 // Open Stopwatch on double-click
 const stopwatchIcon = document.querySelector('.app-item img[alt="Stopwatch"]');
@@ -718,6 +734,184 @@ function resetStopwatch() {
     [sec, mins, hrs] = [0, 0, 0];
     displayTime.textContent = "00:00:00";
 }
+document.getElementById("minimizeStopwatch").onclick = function () {
+    stopwatchWindow.style.display = "none";
+};
+
+document.getElementById("closeStopwatch").onclick = function () {
+    stopwatchWindow.style.display = "none";
+}; 
+
+
+
+/* =========================
+   TO-DO LIST APPLICATION
+========================= */
+
+const todoWindow = document.getElementById("todoWindow");
+const todoInput = document.getElementById("todoInput");
+const todoForm = document.getElementById("todoForm");
+const todoList = document.getElementById("todoList");
+const todoStatus = document.getElementById("todoStatus");
+
+const todoStorageKey = "professorOS_todos";
+
+let todos = loadTodos();
+
+// Open by double-clicking the desktop icon
+const todoIcon = document.querySelector(
+    '.app-item img[alt="To-do List"]'
+);
+
+if (todoIcon) {
+    todoIcon.addEventListener("dblclick", function () {
+        todoWindow.style.display = "block";
+        renderTodos();
+    });
+}
+
+// Minimize and close
+document.getElementById("minimizeTodo").addEventListener(
+    "click",
+    function () {
+        todoWindow.style.display = "none";
+    }
+);
+
+document.getElementById("closeTodo").addEventListener(
+    "click",
+    function () {
+        todoWindow.style.display = "none";
+    }
+);
+
+// Load saved tasks
+function loadTodos() {
+    try {
+        const saved = localStorage.getItem(todoStorageKey);
+        const parsed = saved ? JSON.parse(saved) : [];
+
+        if (Array.isArray(parsed)) {
+            return parsed.filter(function (todo) {
+                return todo &&
+                    typeof todo.text === "string" &&
+                    typeof todo.completed === "boolean" &&
+                    typeof todo.id === "string";
+            });
+        }
+    } catch (error) {
+        console.warn("Could not load saved tasks.", error);
+    }
+
+    return [];
+}
+
+// Save tasks
+function saveTodos() {
+    try {
+        localStorage.setItem(
+            todoStorageKey,
+            JSON.stringify(todos)
+        );
+        return true;
+    } catch (error) {
+        console.error("Could not save tasks.", error);
+        todoStatus.textContent =
+            "Unable to save. Browser storage may be full.";
+        return false;
+    }
+}
+
+// Add a new task
+todoForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const text = todoInput.value.trim();
+
+    if (!text) {
+        todoStatus.textContent = "Please enter a task.";
+        return;
+    }
+
+    const newTodo = {
+        id: crypto.randomUUID(),
+        text: text,
+        completed: false
+    };
+
+    todos.push(newTodo);
+
+    if (saveTodos()) {
+        todoStatus.textContent = "Task added.";
+    }
+
+    todoInput.value = "";
+    renderTodos();
+    todoInput.focus();
+});
+
+// Display all tasks
+function renderTodos() {
+    todoList.replaceChildren();
+
+    todos.forEach(function (todo) {
+        const item = document.createElement("li");
+        item.className = "todo-item";
+
+        if (todo.completed) {
+            item.classList.add("completed");
+        }
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = todo.completed;
+        checkbox.setAttribute(
+            "aria-label",
+            "Mark " + todo.text + " as complete"
+        );
+
+        checkbox.addEventListener("change", function () {
+            todo.completed = checkbox.checked;
+            saveTodos();
+            renderTodos();
+        });
+
+        const taskText = document.createElement("span");
+        taskText.textContent = todo.text;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-todo";
+        deleteButton.setAttribute(
+            "aria-label",
+            "Delete " + todo.text
+        );
+
+        deleteButton.addEventListener("click", function () {
+            todos = todos.filter(function (entry) {
+                return entry.id !== todo.id;
+            });
+
+            saveTodos();
+            renderTodos();
+            todoStatus.textContent = "Task deleted.";
+        });
+
+        item.append(checkbox, taskText, deleteButton);
+        todoList.appendChild(item);
+    });
+
+    if (todos.length === 0) {
+        const emptyMessage = document.createElement("li");
+        emptyMessage.textContent = "No tasks yet. Add your first task!";
+        emptyMessage.className = "empty-todos";
+        todoList.appendChild(emptyMessage);
+    }
+}
+
+// Initial display
+renderTodos();
 
 
 makeWindowDraggable(document.getElementById("calculatorWindow"));
@@ -725,3 +919,28 @@ makeWindowDraggable(document.getElementById("calendarWindow"));
 makeWindowDraggable(document.getElementById("paintWindow"));
 makeWindowDraggable(document.getElementById("filesWindow"));
 makeWindowDraggable(document.getElementById("stopwatchWindow"));
+makeWindowDraggable(document.getElementById("todoWindow"));
+
+
+
+const backgroundMusic = document.getElementById("backgroundMusic");
+const musicToggle = document.getElementById("musicToggle");
+
+backgroundMusic.volume = 0.3; // 30% volume
+
+musicToggle.addEventListener("click", async function () {
+    if (backgroundMusic.paused) {
+        try {
+            await backgroundMusic.play();
+            musicToggle.textContent = "🔊 Mute Music";
+            musicToggle.setAttribute("aria-pressed", "true");
+        } catch (error) {
+            musicToggle.textContent = "Music unavailable";
+            console.error("Could not play music:", error);
+        }
+    } else {
+        backgroundMusic.pause();
+        musicToggle.textContent = "▶ Play Music";
+        musicToggle.setAttribute("aria-pressed", "false");
+    }
+});
